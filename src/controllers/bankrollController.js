@@ -24,6 +24,7 @@ exports.createEvent = async (req, res) => {
 
     if (!bankroll) throw new Error('Bankroll not found');
 
+    const balance_before = bankroll.current_balance;
     let balance_after = balance_before + amount;
 
     if (type === 'WITHDRAW') {
