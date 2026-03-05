@@ -24,13 +24,19 @@ exports.createEvent = async (req, res) => {
 
     if (!bankroll) throw new Error('Bankroll not found');
 
-    const balance_before = bankroll.current_balance;
-    const balance_after = balance_before + amount;
+    let balance_after = balance_before + amount;
+
+    if (type === 'WITHDRAW') {
+      if (balance_before < Math.abs(amount)) {
+        throw new Error('Saldo insuficiente para saque');
+      }
+      balance_after = balance_before - Math.abs(amount);
+    }
 
     const event = await BankrollEvent.create({
       bankroll_id: bankroll.id,
       type,
-      amount,
+      amount: type === 'WITHDRAW' ? -Math.abs(amount) : amount,
       balance_before,
       balance_after
     }, { transaction: t });
